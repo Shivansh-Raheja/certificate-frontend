@@ -142,8 +142,8 @@ const Form = () => {
             now={calculatePercentage(logData.certificatesGenerated, logData.totalCertificates)}
             label={`${calculatePercentage(logData.certificatesGenerated, logData.totalCertificates)}%`}
           />
-          <p>Total Certificates: {logData.totalCertificates}</p>
-          <p>Certificates Generated: {logData.certificatesGenerated}</p>
+          <h4><p>Total Certificates Generated: {logData.totalCertificates}</p></h4>
+          <h4><p>Certificates Sent Via Email: {logData.certificatesGenerated}</p></h4>
         </div>
       )}
     </div>
