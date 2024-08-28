@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Form.css';
+import { ProgressBar } from 'react-bootstrap'; // Ensure react-bootstrap is installed
 
 const Form = () => {
   const [sheetId, setSheetId] = useState('');
@@ -9,6 +10,8 @@ const Form = () => {
   const [organizedBy, setOrganizedBy] = useState('');
   const [statusMessage, setStatusMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [logData, setLogData] = useState(null);
+  const [logLoading, setLogLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,6 +37,7 @@ const Form = () => {
       const result = await response.json();
       if (result.status === 'success') {
         setStatusMessage('Certificates generated and sent successfully!');
+        fetchLogData(); // Fetch log data after successful certificate generation
       } else {
         setStatusMessage(`Error: ${result.message}`);
       }
@@ -42,6 +46,25 @@ const Form = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchLogData = async () => {
+    setLogLoading(true);
+    try {
+      const response = await fetch('http://localhost:3000/fetch-logs');
+      const result = await response.json();
+      setLogData(result);
+    } catch (error) {
+      console.error('Error fetching logs:', error);
+      setLogData(null);
+    } finally {
+      setLogLoading(false);
+    }
+  };
+
+  const calculatePercentage = (generated, total) => {
+    if (!total) return 0;
+    return ((generated / total) * 100).toFixed(2);
   };
 
   return (
@@ -109,6 +132,18 @@ const Form = () => {
       {statusMessage && (
         <div className="alert alert-info mt-4" role="alert">
           {statusMessage}
+        </div>
+      )}
+      {logLoading && <p className="mt-4">Loading log data...</p>}
+      {logData && (
+        <div className="mt-4">
+          <h4>Certificates Generation Progress</h4>
+          <ProgressBar
+            now={calculatePercentage(logData.certificatesGenerated, logData.totalCertificates)}
+            label={`${calculatePercentage(logData.certificatesGenerated, logData.totalCertificates)}%`}
+          />
+          <p>Total Certificates: {logData.totalCertificates}</p>
+          <p>Certificates Generated: {logData.certificatesGenerated}</p>
         </div>
       )}
     </div>

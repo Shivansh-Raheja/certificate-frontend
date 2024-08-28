@@ -1,6 +1,7 @@
 .container {
   max-width: 600px;
   margin: auto;
+  padding: 20px;
 }
 
 .form-container {
@@ -53,12 +54,21 @@
   font-size: 1rem;
   padding: 15px;
   border-radius: 5px;
+  margin-top: 15px;
 }
 
-.execution-log h3 {
+.execution-log {
+  margin-top: 20px;
+}
+
+.execution-log h4 {
   font-size: 1.5rem;
   margin-bottom: 10px;
   font-weight: bold;
+}
+
+.progress-container {
+  margin-top: 20px;
 }
 
 .progress {
@@ -66,14 +76,13 @@
   background-color: #e9ecef;
   border-radius: 5px;
   overflow: hidden;
-  margin-top: 10px;
 }
 
 .progress-bar {
   height: 100%;
   background-color: #007bff;
   text-align: center;
-  line-height: 20px; /* Adjust this if needed */
+  line-height: 20px; /* Center text vertically */
   color: #fff;
   font-size: 0.875rem;
   font-weight: bold;
