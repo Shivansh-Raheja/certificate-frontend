@@ -20,7 +20,7 @@ const Form = () => {
     setStatusMessage('Generating and sending certificates, please wait...');
 
     try {
-      const response = await fetch('http://localhost:3000/generate-certificates', {
+      const response = await fetch('https://certificate-generator-nptz.onrender.com/generate-certificates', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ const Form = () => {
   const fetchLogData = async () => {
     setLogLoading(true);
     try {
-      const response = await fetch('http://localhost:3000/fetch-logs');
+      const response = await fetch('https://certificate-generator-nptz.onrender.com/fetch-logs');
       const result = await response.json();
       setLogData(result);
     } catch (error) {
