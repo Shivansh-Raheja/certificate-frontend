@@ -10,8 +10,29 @@ const Form = () => {
   const [organizedBy, setOrganizedBy] = useState('');
   const [statusMessage, setStatusMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [logData, setLogData] = useState(null);
-  const [logLoading, setLogLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [generatedCount, setGeneratedCount] = useState(0); // New state to track generated count
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchProgress();
+    }, 3000); // Fetch progress every 3 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchProgress = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/fetch-progress');
+      const result = await response.json();
+      if (result.progress !== undefined) {
+        setProgress(result.progress);
+        setGeneratedCount(result.generatedCount); // Set the generated count from the backend
+      }
+    } catch (error) {
+      console.error('Error fetching progress:', error);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,7 +41,7 @@ const Form = () => {
     setStatusMessage('Generating and sending certificates, please wait...');
 
     try {
-      const response = await fetch('https://certificate-generator-nptz.onrender.com/generate-certificates', {
+      const response = await fetch('http://localhost:3000/generate-certificates', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -36,8 +57,8 @@ const Form = () => {
 
       const result = await response.json();
       if (result.status === 'success') {
-        setStatusMessage('Certificates generated and sent successfully!');
-        fetchLogData(); // Fetch log data after successful certificate generation
+        setStatusMessage('Certificates generation started successfully!');
+        // Progress will be updated automatically
       } else {
         setStatusMessage(`Error: ${result.message}`);
       }
@@ -46,25 +67,6 @@ const Form = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const fetchLogData = async () => {
-    setLogLoading(true);
-    try {
-      const response = await fetch('https://certificate-generator-nptz.onrender.com/fetch-logs');
-      const result = await response.json();
-      setLogData(result);
-    } catch (error) {
-      console.error('Error fetching logs:', error);
-      setLogData(null);
-    } finally {
-      setLogLoading(false);
-    }
-  };
-
-  const calculatePercentage = (generated, total) => {
-    if (!total) return 0;
-    return ((generated / total) * 100).toFixed(2);
   };
 
   return (
@@ -134,18 +136,27 @@ const Form = () => {
           {statusMessage}
         </div>
       )}
-      {logLoading && <p className="mt-4">Loading log data...</p>}
-      {logData && (
-        <div className="mt-4">
-          <h4>Certificates Generation Progress</h4>
-          <ProgressBar
-            now={calculatePercentage(logData.certificatesGenerated, logData.totalCertificates)}
-            label={`${calculatePercentage(logData.certificatesGenerated, logData.totalCertificates)}%`}
-          />
-          <h4><p>Total Certificates Generated: {logData.totalCertificates}</p></h4>
-          <h4><p>Certificates Sent Via Email: {logData.certificatesGenerated}</p></h4>
+      <div className="mt-4">
+        <h4>Progress Bar </h4>
+        <ProgressBar
+          now={progress}
+          label={`${progress}%`}
+        />
+        <div 
+          style={{
+            fontSize: '20px',
+            fontWeight: 'bold',
+            padding: '10px',
+            border: '2px solid #007bff', // Bootstrap primary color
+            borderRadius: '5px',
+            display: 'inline-block',
+            backgroundColor: '#f8f9fa',
+            marginTop: '20px'
+          }}
+        >
+          Certificates generated and Sent: {generatedCount}
         </div>
-      )}
+      </div>
     </div>
   );
 };
