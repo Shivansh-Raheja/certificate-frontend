@@ -23,7 +23,7 @@ const Form = () => {
 
   const fetchProgress = async () => {
     try {
-      const response = await fetch('http://localhost:3000/fetch-progress');
+      const response = await fetch('https://certificate-generator-nptz.onrender.com/fetch-progress');
       const result = await response.json();
       if (result.progress !== undefined) {
         setProgress(result.progress);
@@ -41,7 +41,7 @@ const Form = () => {
     setStatusMessage('Generating and sending certificates, please wait...');
 
     try {
-      const response = await fetch('http://localhost:3000/generate-certificates', {
+      const response = await fetch('https://certificate-generator-nptz.onrender.com/generate-certificates', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
